@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "ASPNETITSTEP/1.0.0": {
+        "runtime": {
+          "ASPNETITSTEP.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "ASPNETITSTEP/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
