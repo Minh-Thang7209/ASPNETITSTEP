@@ -80,3 +80,53 @@ else
     }
 </ul>
 <!--HTML-коментар, передається до клієта -->
+
+@{
+    var products = new[]
+    {
+         new { Name = "Ноутбук", Price = 25000 },
+        new { Name = "Смартфон", Price = 18000 },
+        new { Name = "Навушники", Price = 2500 },
+        new { Name = "Клавіатура", Price = 1500 },
+        new { Name = "Мишка", Price = 800 }
+    };
+}
+
+<style>
+    table {
+        border-collapse: collapse;
+        width: 600px;
+    }
+
+    th,
+    td {
+        border: 1px solid black;
+        padding: 10px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #333;
+        color: white;
+    }
+</style>
+
+<table>
+    <thead>
+        <tr>
+            <th>№</th>
+            <th>Назва товару</th>
+            <th>Ціна, грн</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < products.Length; i++)
+        {
+            <tr style="background-color: @(i % 2 == 0 ? "#f2f2f2" : "white")">
+                <td>@(i + 1)</td>
+                <td>@products[i].Name</td>
+                <td>@products[i].Price грн</td>
+            </tr>
+        }
+    </tbody>
+</table>
