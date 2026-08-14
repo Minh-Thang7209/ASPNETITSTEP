@@ -1,7 +1,10 @@
+using ASPNETITSTEP.Services.Hash;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddHash();
 
 var app = builder.Build();
 

@@ -1,11 +1,14 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using ASPNETITSTEP.Models;
+using ASPNETITSTEP.Services.Hash;
 
 namespace ASPNETITSTEP.Controllers;
-
-public class HomeController : Controller
+// primary constructor - прямо при оголощенні класу
+public class HomeController(IHashService hashService) : Controller
 {
+    // Інжекція через конструктор у формі Primary
+    private readonly IHashService _hashService = hashService;
     public IActionResult Index()
     {
         return View();
@@ -22,6 +25,16 @@ public class HomeController : Controller
 
     public IActionResult Razor()
     {
+        return View();
+    }
+
+    public IActionResult IoC()
+    {
+        String digest = _hashService.Digest("123");
+        // передача даних до представлення
+        // варіанти спільних ресурсів
+        ViewBag.Hash = _hashService.GetHashCode();
+        ViewData["digest"] = digest;
         return View();
     }
 
