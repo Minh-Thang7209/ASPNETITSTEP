@@ -1,3 +1,4 @@
+@using ASPNETITSTEP.Services.Time
 @*Інжекція до представлення*@
 @inject ASPNETITSTEP.Services.Hash.IHashService hashService
 
@@ -43,4 +44,15 @@
     <b>DI</b> - Dependency Injection - спосіб передачі інформації від об'єктів до контейнера про необхідні служби.
     Існують різні форми (способи) інжекції - через конструктор, через метод, через властивості тощо. 
     За можливості, краще за все інжекція через конструктор.
+</p>
+
+<h3>Homework</h3>
+<h1>Служба часу</h1>
+
+<p>
+    Timestamp: @ViewBag.Timestamp
+</p>
+
+<p>
+    Hash: @ViewBag.Hash
 </p>

@@ -1,10 +1,12 @@
 using ASPNETITSTEP.Services.Hash;
+using ASPNETITSTEP.Services.Time;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddHash();
+builder.Services.AddTime();
 
 var app = builder.Build();
 
