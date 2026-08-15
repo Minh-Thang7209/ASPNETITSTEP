@@ -34,6 +34,14 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9Jb0MuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[/Users/thang1/ASPNETITSTEP/Views/Home/Models.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9Nb2RlbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/thang1/ASPNETITSTEP/Views/Home/ModelsForm.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9Nb2RlbHNGb3JtLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [/Users/thang1/ASPNETITSTEP/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9Qcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 

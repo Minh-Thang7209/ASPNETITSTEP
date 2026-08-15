@@ -1,0 +1,11 @@
+@model ASPNETITSTEP.Models.Home.Models.HomeModelsFormModel
+@{
+    ViewData["Title"] = "Form Models";
+}
+
+<div class="text-center page-title">
+    @*Звернення до даних, що приходить від контролера*@
+    <h1 class="display-4">Прийом даних форм</h1>
+</div>
+
+@Html.DisplayFor(m => Model)
