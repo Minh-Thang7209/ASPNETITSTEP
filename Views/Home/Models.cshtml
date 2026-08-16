@@ -12,30 +12,66 @@
     <h1 class="display-4">@Model.PageTitle</h1>
 </div>
 <p class="intro">
-   @Model.Intro
+    @Model.Intro
 </p>
 <p class="classification-header">
     @Model.ClassificationHeader
 </p>
 <ul class="classification-list">
-    @foreach(var item in Model.ClassificationList)
+    @foreach (var item in Model.ClassificationList)
     {
         <li>@item</li>
     }
-    </ul>
-    <p class="example-header">
-        @Model.ExampleHeader
-    </p>
-    <ul class="example-list">
-        @foreach(var item in Model.ExampleList)
-        {
-            <li>@item</li>
-        }
-    </ul>
+</ul>
+<p class="example-header">
+    @Model.ExampleHeader
+</p>
+<ul class="example-list">
+    @foreach (var item in Model.ExampleList)
+    {
+        <li>@item</li>
+    }
+</ul>
 <form asp-action="ModelsForm" method="post">
-    Login: <input name="user-login"/>
-    <br/>
-    Password: <input name="user-password" type="password"/>
-    <br/>
-    <button>GO</button>
+    <div>
+        <label>Логін:</label>
+        <input type="text" name="user-login">
+    </div>
+    <div>
+        <label>Пароль:</label>
+        <input type="password" name="user-passoword">
+    </div>
+    <div>
+        <label>
+            <input type="checkbox" name="user-agree" value="true">
+            Я погоджуюсь з умовами
+        </label>
+    </div>
+    <div>
+        <p>Стать:</p>
+        <label>
+            <input type="radio" name="user-gender" value="male">
+            Чоловіча
+        </label>
+        <label>
+            <input type="radio" name="user-gender" value="female">
+            Жіноча
+        </label>
+    </div>
+    <div>
+        <label>Дата народження:</label>
+        <input type="date" name="user-birthdate">
+    </div>
+
+    <div>
+        <label>Улюблений колір:</label>
+        <input type="color" name="user-color">
+    </div>
+
+    <div>
+        <label>Вік:</label>
+        <input type="number" name="user-age">
+    </div>
+
+    <button type="submit">Відправити</button>
 </form>
