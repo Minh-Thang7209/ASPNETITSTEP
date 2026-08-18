@@ -69,6 +69,11 @@ public class HomeController(IHashService hashService, ITimeService timeService) 
         return id == "json" ? Json(viewModel) : View(viewModel); // передаємо модель (обʼєкт) до представлення
     }
 
+    public IActionResult EFCore()
+    {
+        return View();
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
