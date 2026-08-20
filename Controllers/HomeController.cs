@@ -4,14 +4,17 @@ using ASPNETITSTEP.Models;
 using ASPNETITSTEP.Services.Hash;
 using ASPNETITSTEP.Services.Time;
 using ASPNETITSTEP.Models.Home.Models;
+using ASPNETITSTEP.Services.Kdf;
 
 namespace ASPNETITSTEP.Controllers;
 // primary constructor - прямо при оголощенні класу
-public class HomeController(IHashService hashService, ITimeService timeService) : Controller
+public class HomeController(IHashService hashService, ITimeService timeService, IKdfService kdfService) : Controller
 {
     // Інжекція через конструктор у формі Primary
     private readonly IHashService _hashService = hashService;
     private readonly ITimeService _timeService = timeService;
+    private readonly IKdfService _kdfService = kdfService;
+
     public IActionResult Index()
     {
         return View();
@@ -37,7 +40,7 @@ public class HomeController(IHashService hashService, ITimeService timeService) 
     }
     public IActionResult IoC()
     {
-        String digest = _hashService.Digest("123");
+        String digest = _kdfService.Dk("96DCBBBA", "96DCBBBA-9AEE-44A2-8835-72DFE4E1A710");
         // передача даних до представлення
         // варіанти спільних ресурсів
         ViewBag.Hash = _hashService.GetHashCode();

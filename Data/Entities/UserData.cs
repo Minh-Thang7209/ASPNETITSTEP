@@ -9,5 +9,6 @@ namespace ASPNETITSTEP.Data.Entities
         public DateTime BirthDate { get; set; }
         public DateTime RegisteredAt { get; set; }
         public DateTime? DeleteAt { get; set; }
+        public ICollection<UserAccess> Accesses { get; set; } = [];
     }
 }
