@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ASPNETITSTEP")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b9587d057b50677e3df66b90c8bc46732991daa3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+45dc3252a2d95849df5a13d8748c2ee882985b79")]
 [assembly: System.Reflection.AssemblyProductAttribute("ASPNETITSTEP")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ASPNETITSTEP")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
