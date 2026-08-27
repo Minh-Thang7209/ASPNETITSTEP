@@ -53,6 +53,6 @@ document.addEventListener("submit", e => {
                 return r.text();
             }
         }).then(console.log);
-        console.log(credentials);
+        // console.log(credentials);
     }
 });

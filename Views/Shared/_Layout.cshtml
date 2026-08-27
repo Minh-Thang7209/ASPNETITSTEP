@@ -1,4 +1,15 @@
-﻿<!DOCTYPE html>
+﻿@using ASPNETITSTEP.Data.Entities
+@{
+    // перевіряємо авторизацію - вилучаємо з контексту дані за
+    // ключем "userAccessId"
+    UserAccess? userAccess = null;
+    String authKey = "userAccessId";
+    if (Context.Items.Keys.Contains(authKey))
+    {
+        userAccess = (UserAccess)Context.Items[authKey]!;
+    }
+}
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -44,11 +55,18 @@
                                asp-action="EfCore">EFCore</a>
                         </li>
                     </ul>
-                    <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
-                            data-bs-target="#authModal">
-                        Вхід
-                    </button>
+                    @if (userAccess == null)
+                    {
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
+                                data-bs-target="#authModal">
+                            Вхід
+                        </button>
+                    }
+                    else
+                    {
+                        <a class="btn btn-outline-danger" href="?logout">Вихід</a>
+                    }
                 </div>
             </div>
         </nav>
@@ -83,7 +101,8 @@
                             </form>
                         </div>
                         <div class="modal-footer">
-                            <div style="visibility: hidden;" id = "auth-modal-error" class="alert alert-danger py-2 flex-grow-1 text-center" role="alert">
+                            <div style="visibility: hidden;" id="auth-modal-error"
+                                 class="alert alert-danger py-2 flex-grow-1 text-center" role="alert">
                                 A simple danger alert—check it out!
                             </div>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>

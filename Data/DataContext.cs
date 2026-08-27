@@ -7,7 +7,7 @@ namespace ASPNETITSTEP.Data
         public DbSet<Entities.UserData> UsersData { get; set; }
         public DbSet<Entities.UserRole> UsersRoles { get; set; }
         public DbSet<Entities.UserAccess> UserAccesses { get; set; }
-
+        public DbSet<Entities.AuthJournal> AuthJournals { get; set; }
         // Конструювання контексту налаштовується з Program.cs
         // відповідно, на час проєктування делегується конструктор
         // з параметрами підключенням.
