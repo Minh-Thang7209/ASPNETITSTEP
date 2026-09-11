@@ -2,6 +2,7 @@ using ASPNETITSTEP.Data;
 using ASPNETITSTEP.Data.Entities;
 using ASPNETITSTEP.Services.Kdf;
 using ASPNETITSTEP.Models.User;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
@@ -107,14 +108,14 @@ namespace ASPNETITSTEP.Controllers
             }
             catch (Exception ex)
             {
-                return Unauthorized(ex.Message);
+                return BadRequest(ex.Message);
             }
             if (usserAccess == null)
             {
                 return Unauthorized("Credentials rejected: check login and password");
 
             }
-            HttpContext.Session.SetString("UserAccessId", usserAccess.Id.ToString());
+            HttpContext.Session.SetString("userAccessId", usserAccess.Id.ToString());
             return Ok();
         }
 
@@ -148,14 +149,14 @@ namespace ASPNETITSTEP.Controllers
                 name = usserAccess.UserData.FullName,
                 email = usserAccess.UserData.Email
             };
-            String body = Microsoft.AspNetCore.Authentication.Base64UrlTextEncoder.Encode(
+            String body = Base64UrlTextEncoder.Encode(
      Encoding.UTF8.GetBytes(
          JsonSerializer.Serialize(header)))
      + "." +
-     Microsoft.AspNetCore.Authentication.Base64UrlTextEncoder.Encode(
+     Base64UrlTextEncoder.Encode(
      Encoding.UTF8.GetBytes(
          JsonSerializer.Serialize(payload)));
-            String signature = Microsoft.AspNetCore.Authentication.Base64UrlTextEncoder.Encode(System.Security.Cryptography.HMACSHA256.HashData(
+            String signature = Base64UrlTextEncoder.Encode(System.Security.Cryptography.HMACSHA256.HashData(
                 Encoding.UTF8.GetBytes("secret"),
                 Encoding.UTF8.GetBytes(body)
             ));

@@ -4,6 +4,7 @@ using ASPNETITSTEP.Services.Kdf;
 using ASPNETITSTEP.Services.Time;
 using ASPNETITSTEP.Services.Storage;
 using Microsoft.EntityFrameworkCore;
+using ASPNETITSTEP.Middleware.AuthSession;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -52,6 +53,7 @@ app.UseCors();
 app.UseAuthorization();
 app.MapStaticAssets();
 app.UseSession();
+app.UseAuthSession();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")

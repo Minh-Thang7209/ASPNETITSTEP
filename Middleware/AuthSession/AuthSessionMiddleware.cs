@@ -1,6 +1,7 @@
 using ASPNETITSTEP.Data;
 using ASPNETITSTEP.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace ASP_P42.Middleware.AuthSession
 {
@@ -17,6 +18,21 @@ namespace ASP_P42.Middleware.AuthSession
             DataContext dataContext    // порядок ролі не грає, тільки тип
         )
         {
+            String authKey = "userAccessId";
+            // Спочатку перевіряємо чи не запитано вихід (з авториз. режиму)
+            // про це свідчить наявність query-параметра "logout"
+            if (context.Request.Query.ContainsKey("logout"))
+            {
+                // видаляємо з сесії збережені дані
+                context.Session.Remove(authKey);
+                // переадресовуємо відповідь на ту ж адресу, з
+                // якої прийшов запит
+                // з метою "прибирання" наявного query-параметра
+                context.Response.Redirect(context.Request.Path);
+                // зупиняємо подальшу обробку даного запиту
+                return;
+            }
+
             // context, що передається параметром, це той самий 
             // HttpContext, що доступний з контролерів
             // Відповідно, до нього можна закласти дані, що можуть
@@ -24,7 +40,6 @@ namespace ASP_P42.Middleware.AuthSession
             context.Items.Add("itemKey", "Item Value");
 
             // перевіряємо, чи є у сесії елемент з ключем "userAccessId"
-            String authKey = "userAccessId";
             if (context.Session.Keys.Contains(authKey))
             {
                 String userAccessId = context.Session.GetString(authKey)!;
@@ -38,7 +53,22 @@ namespace ASP_P42.Middleware.AuthSession
                 if (userAccess != null)
                 {
                     // знайдено підтвердження допуску, передаємо до контексту
-                    context.Items.Add(authKey, userAccess);
+                    // context.Items.Add(authKey, userAccess);
+                    // Даний підхід не є рекомендованим, оскільки 
+                    // прив'язується до типів даних сутності.
+                    // Рекомендовано використати уніфікований інтерфейс
+                    // за допомогою Claims - набору атрибутів типового призначення
+                    context.User = new ClaimsPrincipal(
+                        new ClaimsIdentity(
+                            [
+                                new Claim(ClaimTypes.Name, userAccess.UserData.FullName),
+                                new(ClaimTypes.Email, userAccess.UserData.Email),
+                                new(ClaimTypes.NameIdentifier, userAccess.Login),
+                                new(ClaimTypes.Sid, userAccess.Id.ToString()),
+                            ],
+                            nameof(AuthSessionMiddleware)
+                        )
+                    );
                 }
             }
 

@@ -44,11 +44,12 @@ document.addEventListener("submit", e => {
         const credentials = Base64.encode(userPass);
         fetch("/User/BasicAuth", {
             headers: {
-                "Authorization": "Basic !" + credentials,
+                "Authorization": "Basic " + credentials,
             }
         }).then(r => {
             if(r.ok) {
-                return r.json();
+                window.location.reload();
+                return;
             }
             else {
                 return r.text();
