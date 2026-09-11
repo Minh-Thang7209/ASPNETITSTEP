@@ -1,16 +1,103 @@
 using ASPNETITSTEP.Data;
 using ASPNETITSTEP.Data.Entities;
 using ASPNETITSTEP.Services.Kdf;
+using ASPNETITSTEP.Models.User;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 namespace ASPNETITSTEP.Controllers
 {
     public class UserController(DataContext dataContext, IKdfService kdfService) : Controller
     {
         private readonly DataContext _dataContext = dataContext;
         private readonly IKdfService _kdfService = kdfService;
+         public IActionResult SignUp([FromBody]UserSignupFormModel formModel)
+        {
+            if(formModel == null)
+            {
+                return BadRequest("Data structure non-bindable to model");
+            }
+            // першими ідуть "дешеві" перевірки - з мінімальною працеємністю
+            if( ! formModel.IsAgree)
+            {
+                return BadRequest("You should confirm site policy (agreement)");
+            }
+            String requiredMessage = " could not be empty";
+            if (String.IsNullOrEmpty(formModel.Login))
+            {
+                return BadRequest(nameof(formModel.Login) + requiredMessage);
+            }
+            if (String.IsNullOrEmpty(formModel.FullName))
+            {
+                return BadRequest(nameof(formModel.FullName) + requiredMessage);
+            }
+            if (String.IsNullOrEmpty(formModel.Email))
+            {
+                return BadRequest(nameof(formModel.Email) + requiredMessage);
+            }
+            if (String.IsNullOrEmpty(formModel.Password))
+            {
+                return BadRequest(nameof(formModel.Password) + requiredMessage);
+            }
+            if(formModel.Password != formModel.Repeat)
+            {
+                return BadRequest("Password and Repeat mismatch");
+            }
+            // перевірки наступної складності - відповідність форматам
+            // а також попередня обробка
+            formModel.FullName = formModel.FullName.Trim();
+            if (formModel.FullName.Length < 2)
+            {
+                return BadRequest(nameof(formModel.FullName) + " too short (2 symbols at least)");
+            }
+            formModel.Login = formModel.Login.Trim();
+            if (formModel.Login.Length < 2)
+            {
+                return BadRequest(nameof(formModel.Login) + " too short (2 symbols at least)");
+            }
+            if(formModel.Login.Contains(':'))
+            {
+                return BadRequest(nameof(formModel.Login) + " could not contain colon (':')");
+            }
+            formModel.Email = formModel.Email.Trim();
+            if( ! Regex.IsMatch(
+                formModel.Email, 
+                @"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$"
+            ))
+            {
+                return BadRequest(nameof(formModel.Email) + " has invalid format");
+            }
+            // найскладніші перевірки - з залученням БД
+            if(_dataContext.UserAccesses.Any(ua => ua.Login == formModel.Login))
+            {
+                return BadRequest(nameof(formModel.Login) + $" '{formModel.Login}' is already in use");
+            }
+            Guid userId = Guid.NewGuid();
+            _dataContext.UsersData.Add(new()
+            {
+                Id = userId,
+                FullName = formModel.FullName,
+                Email = formModel.Email,
+                Phone = formModel.Phone,
+                RegisteredAt = DateTime.Now,
+                BirthDate = default,
+            });
+            String salt = Guid.NewGuid().ToString();
+            _dataContext.UserAccesses.Add(new()
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                RoleId = _dataContext.UsersRoles.First(r => r.Name == "User").Id,
+                Login = formModel.Login,
+                Salt = salt,
+                Dk = _kdfService.Dk(formModel.Password, salt),
+            });
+            _dataContext.SaveChanges();
+            return Json(formModel);
+        }
+        
         public IActionResult BasicAuth()
         {
             UserAccess? usserAccess;
@@ -69,8 +156,9 @@ namespace ASPNETITSTEP.Controllers
      Encoding.UTF8.GetBytes(
          JsonSerializer.Serialize(payload)));
             String signature = Microsoft.AspNetCore.Authentication.Base64UrlTextEncoder.Encode(System.Security.Cryptography.HMACSHA256.HashData(
-                Encoding.UTF8.GetBytes(body + "." + Microsoft.AspNetCore.Authentication.Base64UrlTextEncoder.Encode(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(header)))),
-                Encoding.UTF8.GetBytes("secret")));
+                Encoding.UTF8.GetBytes("secret"),
+                Encoding.UTF8.GetBytes(body)
+            ));
             return Ok(body + "." + signature);
         }
         private UserAccess? AuthenticateUser()

@@ -42,6 +42,120 @@ namespace ASPNETITSTEP.Migrations
                     b.ToTable("AuthJournals");
                 });
 
+            modelBuilder.Entity("ASPNETITSTEP.Data.Entities.Product", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("GroupId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("IsHidden")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Slug")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("ASPNETITSTEP.Data.Entities.ProductGroup", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("IsHidden")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("OrderInPrice")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("ProductGroups");
+                });
+
+            modelBuilder.Entity("ASPNETITSTEP.Data.Entities.ProductVersion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("IsHidden")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("DECIMAL(18,2)");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Slug")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Stock")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Version")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("ProductVersions");
+                });
+
             modelBuilder.Entity("ASPNETITSTEP.Data.Entities.UserAccess", b =>
                 {
                     b.Property<Guid>("Id")
@@ -184,6 +298,37 @@ namespace ASPNETITSTEP.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ASPNETITSTEP.Data.Entities.Product", b =>
+                {
+                    b.HasOne("ASPNETITSTEP.Data.Entities.ProductGroup", "Group")
+                        .WithMany("Products")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Group");
+                });
+
+            modelBuilder.Entity("ASPNETITSTEP.Data.Entities.ProductGroup", b =>
+                {
+                    b.HasOne("ASPNETITSTEP.Data.Entities.ProductGroup", "ParentGroup")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId");
+
+                    b.Navigation("ParentGroup");
+                });
+
+            modelBuilder.Entity("ASPNETITSTEP.Data.Entities.ProductVersion", b =>
+                {
+                    b.HasOne("ASPNETITSTEP.Data.Entities.Product", "Product")
+                        .WithMany("Versions")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("ASPNETITSTEP.Data.Entities.UserAccess", b =>
                 {
                     b.HasOne("ASPNETITSTEP.Data.Entities.UserRole", "UserRole")
@@ -201,6 +346,18 @@ namespace ASPNETITSTEP.Migrations
                     b.Navigation("UserData");
 
                     b.Navigation("UserRole");
+                });
+
+            modelBuilder.Entity("ASPNETITSTEP.Data.Entities.Product", b =>
+                {
+                    b.Navigation("Versions");
+                });
+
+            modelBuilder.Entity("ASPNETITSTEP.Data.Entities.ProductGroup", b =>
+                {
+                    b.Navigation("Children");
+
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("ASPNETITSTEP.Data.Entities.UserData", b =>

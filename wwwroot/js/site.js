@@ -37,6 +37,7 @@ document.addEventListener("submit", e => {
             err.innerText = "";
             err.style.visibility = "hidden";
         }
+        
         // Передаємо дані до бекенду з дотриманням стандарту
         // https://datatracker.ietf.org/doc/html/rfc7617
         const userPass = login + ":" + password;
@@ -54,5 +55,18 @@ document.addEventListener("submit", e => {
             }
         }).then(console.log);
         // console.log(credentials);
+    }
+    else if (form.id == 'admin-add-group') {
+        e.preventDefault();
+        const formData = new FormData(form);
+        fetch("/Admin/AddGroup", {
+            method: "POST",
+            body: formData
+        }).then(r => {
+            //if (r.ok)
+            {
+                r.text().then(alert);
+            }
+        });
     }
 });

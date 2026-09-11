@@ -7,6 +7,9 @@ namespace ASPNETITSTEP.Data
         public DbSet<Entities.UserData> UsersData { get; set; }
         public DbSet<Entities.UserRole> UsersRoles { get; set; }
         public DbSet<Entities.UserAccess> UserAccesses { get; set; }
+        public DbSet<Entities.ProductGroup> ProductGroups { get; set; }
+        public DbSet<Entities.Product> Products { get; set; }
+        public DbSet<Entities.ProductVersion> ProductVersions { get; set; }
         public DbSet<Entities.AuthJournal> AuthJournals { get; set; }
         // Конструювання контексту налаштовується з Program.cs
         // відповідно, на час проєктування делегується конструктор
@@ -81,7 +84,31 @@ namespace ASPNETITSTEP.Data
                             Dk = "FCB57CECE720632FDBB68958CF953E46",
                         }
                 ]);
-            
+            modelBuilder.Entity<Entities.ProductGroup>()
+           .HasIndex(p => p.Slug)
+           .IsUnique();
+
+            modelBuilder.Entity<Entities.Product>()
+                .HasIndex(p => p.Slug)
+                .IsUnique();
+
+            modelBuilder.Entity<Entities.ProductVersion>()
+                .HasIndex(p => p.Slug)
+                .IsUnique();
+
+            modelBuilder.Entity<Entities.Product>()
+                .HasOne(p => p.Group)
+                .WithMany(g => g.Products)
+                .HasForeignKey(p => p.GroupId);
+
+            modelBuilder.Entity<Entities.ProductVersion>()
+                .HasOne(p => p.Product)
+                .WithMany(g => g.Versions);
+
+            modelBuilder.Entity<Entities.ProductGroup>()
+                .HasOne(p => p.ParentGroup)
+                .WithMany(g => g.Children)
+                .HasForeignKey(p => p.ParentId);
             // сідування (англ. seed - зерно) - внесенення початкових даних, зокрема, базові ролі та кореневий адміністратор
         }
     }

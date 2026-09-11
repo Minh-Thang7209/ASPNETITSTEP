@@ -2,6 +2,7 @@ using ASPNETITSTEP.Data;
 using ASPNETITSTEP.Services.Hash;
 using ASPNETITSTEP.Services.Kdf;
 using ASPNETITSTEP.Services.Time;
+using ASPNETITSTEP.Services.Storage;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -12,6 +13,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddHash();
 builder.Services.AddTime();
 builder.Services.AddKdf();
+builder.Services.AddStorage();
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
@@ -24,7 +26,15 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-
+builder.Services.AddCors(options =>
+    options.AddDefaultPolicy(policy => 
+        policy
+        .AllowAnyOrigin()   // відкритий АРІ - для всіх споживачів
+        .AllowAnyHeader()   // дозволяємо усі заголовки
+        .AllowAnyMethod()   // та усі методи запиту
+                            // .WithMethods("GET", "POST") - якщо обмежуємо
+    )
+);
 
 var app = builder.Build();
 
@@ -38,11 +48,10 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
+app.UseCors();
 app.UseAuthorization();
-
 app.MapStaticAssets();
-
+app.UseSession();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
