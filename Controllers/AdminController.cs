@@ -2,6 +2,7 @@ using ASPNETITSTEP.Data;
 using ASPNETITSTEP.Migrations;
 using ASPNETITSTEP.Models.Admin;
 using ASPNETITSTEP.Services.Storage;
+using ASPNETITSTEP.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ASP_P42.Controllers
@@ -26,79 +27,80 @@ namespace ASP_P42.Controllers
             return View(viewModel);
         }
 
-        // [HttpPost]
-        // public IActionResult AddProduct(AdminAddProductFormModel formModel)
-        // {
-        //     try
-        //     {
-        //         /* Д.З. Реалізувати валідацію моделі форми 
-        //          * додавання нового товару
-        //          * - назва (довжина, відсутність спецсимволів)
-        //          * - опис - якщо передається, то перевіряється (довжина), інакше ігнорується
-        //          * - Slug (унікальність, url-коректність) - якщо передається
-        //          * - кількість - ціле позитивне число або "-1"
-        //          * - ціна - позитивне число більше за 0.01
-        //          */
-        //         // 
-        //         // оскільки товари МАЮТЬ належати певній групі, перевіряємо її правильність
-        //         Data.Entities.ProductGroup group = _dataContext
-        //             .ProductGroups
-        //             .FirstOrDefault(g => g.Id == formModel.GroupId)
-        //         ?? throw new Exception($"Group not found with id='{formModel.GroupId}'");
-
-        //         if (formModel.ProductId != null)
-        //         {
-        //             // додавання нової версії, слід пересвідчитись у наявності товару
-        //             Data.Entities.Product product = _dataContext
-        //                 .Products
-        //                 .FirstOrDefault(p => p.Id == formModel.ProductId) 
-        //             ?? throw new Exception($"Product not found with id='{formModel.ProductId}'");
+        [HttpPost]
+        public IActionResult AddProduct(AdminAddProductFormModel formModel)
+        {
+            try
+            {
+                /* Д.З. Реалізувати валідацію моделі форми 
+                 * додавання нового товару
+                 * - назва (довжина, відсутність спецсимволів)
+                 * - опис - якщо передається, то перевіряється (довжина), інакше ігнорується
+                 * - Slug (унікальність, url-коректність) - якщо передається
+                 * - кількість - ціле позитивне число або "-1"
+                 * - ціна - позитивне число більше за 0.01
+                 */
+                // 
+                // оскільки товари МАЮТЬ належати певній групі, перевіряємо її правильність
+                ProductGroup group = _dataContext
+                    .ProductGroups
+                    .FirstOrDefault(g => g.Id == formModel.GroupId)
+                ?? throw new Exception($"Group not found with id='{formModel.GroupId}'");
 
 
-        //         }
-        //         else
-        //         {
-        //             // додавання нового товару
-        //             // оскільки зображення (картинка) опціональна, перевіряємо без винятків
-        //             String? imageUrl = null;
-        //             if(formModel.Image != null)
-        //             {
-        //                 // але якщо дані передано, то перевіряємо повністю
-        //                 imageUrl = _storageService.Save(formModel.Image);
-        //             }
-        //             // Розбираємо дані на Товар і Версію
-        //             Guid productId = Guid.NewGuid();
-        //             _dataContext.Products.Add(new()
-        //             {
-        //                 Id = productId,
-        //                 GroupId = group.Id,
-        //                 Name = formModel.Name,
-        //                 Description = formModel.Description,
-        //                 ImageUrl = imageUrl,
-        //                 IsHidden = formModel.IsHidden,
-        //                 OrderInPrice = formModel.Order,
-        //                 Slug = formModel.Slug,
-        //             });
-        //             _dataContext.ProductVersions.Add(new()
-        //             {
-        //                 Id = Guid.NewGuid(),
-        //                 ProductId = productId,
-        //                 ImageUrl = imageUrl,
-        //                 Price = (decimal)formModel.Price,
-        //                 Stock = formModel.Stock,
-        //                 OrderInPrice = 1,
-        //                 Slug = formModel.Slug,
-        //                 IsHidden = formModel.IsHidden,                        
-        //             });
-        //             _dataContext.SaveChanges();
-        //         }
-        //         return Ok();
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         return BadRequest(ex.Message);
-        //     }            
-        // }
+                if (formModel.ProductId != null)
+                {
+                    // додавання нової версії, слід пересвідчитись у наявності товару
+                    Product product = _dataContext
+                        .Products
+                        .FirstOrDefault(p => p.Id == formModel.ProductId) 
+                    ?? throw new Exception($"Product not found with id='{formModel.ProductId}'");
+
+
+                }
+                else
+                {
+                    // додавання нового товару
+                    // оскільки зображення (картинка) опціональна, перевіряємо без винятків
+                    String? imageUrl = null;
+                    if(formModel.Image != null)
+                    {
+                        // але якщо дані передано, то перевіряємо повністю
+                        imageUrl = _storageService.Save(formModel.Image);
+                    }
+                    // Розбираємо дані на Товар і Версію
+                    Guid productId = Guid.NewGuid();
+                    _dataContext.Products.Add(new()
+                    {
+                        Id = productId,
+                        GroupId = group.Id,
+                        Name = formModel.Name,
+                        Description = formModel.Description,
+                        ImageUrl = imageUrl,
+                        IsHidden = formModel.IsHidden,
+                        OrderInPrice = formModel.Order,
+                        Slug = formModel.Slug,
+                    });
+                    _dataContext.ProductVersions.Add(new()
+                    {
+                        Id = Guid.NewGuid(),
+                        ProductId = productId,
+                        ImageUrl = imageUrl,
+                        Price = (decimal)formModel.Price,
+                        Stock = formModel.Stock,
+                        OrderInPrice = 1,
+                        Slug = formModel.Slug,
+                        IsHidden = formModel.IsHidden,                        
+                    });
+                    _dataContext.SaveChanges();
+                }
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }            
+        }
 
         public IActionResult Group()
         {
