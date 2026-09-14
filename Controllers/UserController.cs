@@ -1,13 +1,14 @@
 using ASPNETITSTEP.Data;
 using ASPNETITSTEP.Data.Entities;
-using ASPNETITSTEP.Services.Kdf;
 using ASPNETITSTEP.Models.User;
+using ASPNETITSTEP.Services.Kdf;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+
 namespace ASPNETITSTEP.Controllers
 {
     public class UserController(DataContext dataContext, IKdfService kdfService) : Controller
@@ -83,14 +84,14 @@ namespace ASPNETITSTEP.Controllers
                 Email = formModel.Email,
                 Phone = formModel.Phone,
                 RegisteredAt = DateTime.Now,
-                BirthDate = default,
+                Birthdate = default,
             });
             String salt = Guid.NewGuid().ToString();
             _dataContext.UserAccesses.Add(new()
             {
                 Id = Guid.NewGuid(),
                 UserId = userId,
-                RoleId = _dataContext.UsersRoles.First(r => r.Name == "User").Id,
+                RoleId = _dataContext.UserRoles.First(r => r.Name == "User").Id,
                 Login = formModel.Login,
                 Salt = salt,
                 Dk = _kdfService.Dk(formModel.Password, salt),

@@ -4,7 +4,7 @@ namespace ASPNETITSTEP.Data.Entities
 {
     public class ProductVersion
     {
-        public Guid Id { get; set; }
+         public Guid Id { get; set; }
 
         public Guid ProductId { get; set; }
 
@@ -20,6 +20,9 @@ namespace ASPNETITSTEP.Data.Entities
         public String? ImageUrl { get; set; } = null!;
 
         public int IsHidden { get; set; } = 0;
+
+        public int OrderInPrice { get; set; } = 100000;
+
 
         public Product Product { get; set; } = null!;
     }

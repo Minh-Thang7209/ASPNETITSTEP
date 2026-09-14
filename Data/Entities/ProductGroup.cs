@@ -15,7 +15,10 @@ namespace ASPNETITSTEP.Data.Entities
         public String ImageUrl { get; set; } = null!;
 
         public int IsHidden { get; set; } = 0;
+
         public int OrderInPrice { get; set; } = 100000;
+
+
 
         public ICollection<Product> Products { get; set; } = [];
         public ProductGroup? ParentGroup { get; set; }

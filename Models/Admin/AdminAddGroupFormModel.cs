@@ -21,5 +21,8 @@ namespace ASPNETITSTEP.Models.Admin
 
         [FromForm(Name = "group-hidden")]
         public int IsHidden { get; set; } = 0;
+
+        [FromForm(Name = "group-order")]
+        public int Order { get; set; }
     }
 }

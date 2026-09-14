@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 namespace ASPNETITSTEP.Data.Entities
 {
     public class Product
@@ -8,13 +9,15 @@ namespace ASPNETITSTEP.Data.Entities
 
         public String Name { get; set; } = null!;
 
-        public String Description { get; set; } = null!;
+        public String? Description { get; set; } = null!;
 
         public String? Slug { get; set; } = null!;
 
         public String? ImageUrl { get; set; } = null!;
 
         public int IsHidden { get; set; } = 0;
+
+        public int OrderInPrice { get; set; } = 100000;
 
         public ProductGroup Group { get; set; } = null!;
         public ICollection<ProductVersion> Versions { get; set; } = [];

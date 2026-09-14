@@ -6,7 +6,7 @@ namespace ASPNETITSTEP.Data.Entities
         public String FullName { get; set;} = null!;
         public String Email { get; set; } = null!;
         public String? Phone { get; set; } = null!;
-        public DateTime BirthDate { get; set; }
+        public DateTime Birthdate { get; set; }
         public DateTime RegisteredAt { get; set; }
         public DateTime? DeleteAt { get; set; }
         public ICollection<UserAccess> Accesses { get; set; } = [];

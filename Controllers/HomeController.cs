@@ -1,10 +1,10 @@
 using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
 using ASPNETITSTEP.Models;
-using ASPNETITSTEP.Services.Hash;
-using ASPNETITSTEP.Services.Time;
 using ASPNETITSTEP.Models.Home.Models;
+using ASPNETITSTEP.Services.Hash;
 using ASPNETITSTEP.Services.Kdf;
+using ASPNETITSTEP.Services.Time;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ASPNETITSTEP.Controllers;
 // primary constructor - прямо при оголощенні класу
@@ -72,6 +72,7 @@ public class HomeController(IHashService hashService, ITimeService timeService, 
         return id == "json" ? Json(viewModel) : View(viewModel); // передаємо модель (обʼєкт) до представлення
     }
 
+    [HttpPost]  // Обмежуємо використання сторінки лише методом POST
     public IActionResult EFCore()
     {
         return View();
