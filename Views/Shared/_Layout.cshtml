@@ -1,16 +1,12 @@
-﻿@using ASPNETITSTEP.Data.Entities
+﻿@using System.Security.Claims
 @{
-    UserAccess? userAccess = null;
-
-    String authKey = "userAccessId";
-
-    if (Context.Items.Keys.Contains(authKey))
-    {
-        userAccess = (UserAccess)Context.Items[authKey]!;
-    }
-
-    bool isAuthenticated = userAccess != null;
-    string? userName = userAccess?.Login;
+    bool isAuthenticated = Context.User.Identity?.IsAuthenticated ?? false;
+    String? userName = isAuthenticated
+    ? Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value
+    : null;
+    String? userEmail = isAuthenticated
+    ? Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value
+    : null;
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -77,6 +73,7 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
+            @isAuthenticated
             @RenderBody()
         </main>
     </div>

@@ -13,8 +13,9 @@ namespace ASP_P42.Middleware.AuthSession
     {
         private readonly RequestDelegate _next = next;
 
-        public async Task InvokeAsync(
-            HttpContext context,       // інжекція через метод
+        public async Task InvokeAsync(HttpContext context, 
+            ILogger<AuthSessionMiddleware> logger,
+                  // інжекція через метод
             DataContext dataContext    // порядок ролі не грає, тільки тип
         )
         {
@@ -44,12 +45,14 @@ namespace ASP_P42.Middleware.AuthSession
             {
                 String userAccessId = context.Session.GetString(authKey)!;
                 // це має бути валідний рядок з БД - перевіряємо...
+                Guid UserAccessGuid = Guid.Parse(userAccessId);
                 UserAccess? userAccess = dataContext
                     .UserAccesses
                     .Include(ua => ua.UserData)  // інструкція для заповнення
                     .Include(ua => ua.UserRole)  // навігаційних властивостей
                     .AsNoTracking()              // Вимкнення стеження змін
-                    .FirstOrDefault(ua => ua.Id.ToString() == userAccessId);
+                    .FirstOrDefault(ua => ua.Id == UserAccessGuid);
+                    //logger.LogWarning(userAccessId);
                 if (userAccess != null)
                 {
                     // знайдено підтвердження допуску, передаємо до контексту
@@ -58,17 +61,24 @@ namespace ASP_P42.Middleware.AuthSession
                     // прив'язується до типів даних сутності.
                     // Рекомендовано використати уніфікований інтерфейс
                     // за допомогою Claims - набору атрибутів типового призначення
+                    //logger.LogWarning(userAccess.Login.ToString());
+                    //logger.LogWarning(userAccess.UserData.FullName.ToString());
+                    //logger.LogWarning(userAccess.UserData.Email.ToString());
+
+                    logger.LogWarning(userAccessId);
                     context.User = new ClaimsPrincipal(
                         new ClaimsIdentity(
                             [
-                                new Claim(ClaimTypes.Name, userAccess.UserData.FullName),
-                                new(ClaimTypes.Email, userAccess.UserData.Email),
-                                new(ClaimTypes.NameIdentifier, userAccess.Login),
-                                new(ClaimTypes.Sid, userAccess.Id.ToString()),
+                                //new Claim(ClaimTypes.Name, userAccess.UserData.FullName),
+                                //new(ClaimTypes.Email, userAccess.UserData.Email),
+                                //new(ClaimTypes.NameIdentifier, userAccess.Login),
+                                new(ClaimTypes.Sid, userAccessId),
                             ],
                             nameof(AuthSessionMiddleware)
                         )
                     );
+                    logger.LogWarning(context.User.Identity?.IsAuthenticated.ToString());
+
                 }
             }
 

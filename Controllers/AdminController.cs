@@ -7,10 +7,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ASP_P42.Controllers
 {
-    public class AdminController(IStorageService storageService, DataContext dataContext) : Controller
+    public class AdminController(IStorageService storageService, DataAccessor dataAccessor, DataContext dataContext) : Controller
     {
-       private readonly IStorageService _storageService = storageService;
+        private readonly IStorageService _storageService = storageService;
         private readonly DataContext _dataContext = dataContext;
+        private readonly DataAccessor _dataAccssor = dataAccessor;
+
          
 
         public IActionResult Index()
@@ -22,7 +24,7 @@ namespace ASP_P42.Controllers
         {
             AdminGroupViewModel viewModel = new()
             {
-                Groups = _dataContext.ProductGroups.OrderBy(g => g.OrderInPrice).ToList(),
+                Groups = _dataAccssor.GetAllProductGroups(isIncludeHidden: true),
             };
             return View(viewModel);
         }
@@ -47,6 +49,14 @@ namespace ASP_P42.Controllers
                     .FirstOrDefault(g => g.Id == formModel.GroupId)
                 ?? throw new Exception($"Group not found with id='{formModel.GroupId}'");
 
+                // додавання нового товару
+                // оскільки зображення (картинка) опціональна, перевіряємо без винятків
+                String? imageUrl = null;
+                    if(formModel.Image != null)
+                    {
+                        // але якщо дані передано, то перевіряємо повністю
+                        imageUrl = _storageService.Save(formModel.Image);
+                    }
 
                 if (formModel.ProductId != null)
                 {
@@ -56,18 +66,20 @@ namespace ASP_P42.Controllers
                         .FirstOrDefault(p => p.Id == formModel.ProductId) 
                     ?? throw new Exception($"Product not found with id='{formModel.ProductId}'");
 
-
+                    _dataContext.ProductVersions.Add(new()
+                    {
+                        Id = _dataAccssor.GetDbIdentity(),
+                        ProductId = product.Id,
+                        ImageUrl = imageUrl,
+                        Price = (decimal)formModel.Price,
+                        Stock = formModel.Stock,
+                        OrderInPrice = formModel.Order,
+                        Slug = formModel.Slug,
+                        IsHidden = formModel.IsHidden,                        
+                    });
                 }
                 else
                 {
-                    // додавання нового товару
-                    // оскільки зображення (картинка) опціональна, перевіряємо без винятків
-                    String? imageUrl = null;
-                    if(formModel.Image != null)
-                    {
-                        // але якщо дані передано, то перевіряємо повністю
-                        imageUrl = _storageService.Save(formModel.Image);
-                    }
                     // Розбираємо дані на Товар і Версію
                     Guid productId = Guid.NewGuid();
                     _dataContext.Products.Add(new()
@@ -90,10 +102,11 @@ namespace ASP_P42.Controllers
                         Stock = formModel.Stock,
                         OrderInPrice = 1,
                         Slug = formModel.Slug,
-                        IsHidden = formModel.IsHidden,                        
+                        IsHidden = formModel.IsHidden,
+                        Version = formModel.Name                    
                     });
-                    _dataContext.SaveChanges();
                 }
+                _dataContext.SaveChanges();
                 return Ok();
             }
             catch (Exception ex)
@@ -112,7 +125,7 @@ namespace ASP_P42.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddGroup(AdminAddGroupFormModel formModel)
+        public async Task<IActionResult> AddGroup(AdminAddGroupFormModel formModel)
         {
             try
             {
@@ -122,9 +135,8 @@ namespace ASP_P42.Controllers
                  * - опис (довжина)
                  * - Slug (унікальність, url-коректність)
                  */
-                _dataContext.ProductGroups.Add(new()
+                Guid newGroupId = await _dataAccssor.AddNewProductGroup(new()
                 {
-                    Id = Guid.NewGuid(),
                     ParentId = formModel.ParentId,
                     Name = formModel.Name,
                     Description = formModel.Description,
@@ -132,7 +144,6 @@ namespace ASP_P42.Controllers
                     IsHidden = formModel.IsHidden,
                     ImageUrl = "/storage/image/" + _storageService.Save(formModel.Image)
                 });
-                _dataContext.SaveChanges();
                 return Ok();
             }
             catch (Exception ex)
