@@ -21,25 +21,34 @@ document.addEventListener("submit", e => {
         const password = formData.get("auth-password");
 
         let errorMessage = "";
-        if(login.trim().length == 0) {
+        if (login.trim().length == 0) {
             errorMessage += "Логін не може бути порожнім. ";
-        }   
-         if(password.trim().length == 0) {
+        }
+        if (password.trim().length == 0) {
             errorMessage += "Пароль не може бути порожнім. ";
-        } 
-         const err = document.getElementById("auth-modal-error");  
-         if(errorMessage.length > 0) {
-           err.innerText = errorMessage;
-           err.style.visibility = "visible";
-           return;
-        }   
-        else{
+        }
+        const err = document.getElementById("auth-modal-error");
+        if (errorMessage.length > 0) {
+            err.innerText = errorMessage;
+            err.style.visibility = "visible";
+            return;
+        }
+        else {
             err.innerText = "";
             err.style.visibility = "hidden";
         }
-        
+
         // Передаємо дані до бекенду з дотриманням стандарту
         // https://datatracker.ietf.org/doc/html/rfc7617
+        if (login.includes(':')) {
+            const error = document.getElementById("auth-modal-error");
+
+            error.textContent = "Login could not contain colon (':')";
+            error.style.visibility = "visible";
+
+            return;
+        }
+
         const userPass = login + ":" + password;
         const credentials = Base64.encode(userPass);
         fetch("/User/BasicAuth", {
@@ -47,14 +56,18 @@ document.addEventListener("submit", e => {
                 "Authorization": "Basic " + credentials,
             }
         }).then(r => {
-            if(r.ok) {
+            if (r.ok) {
                 window.location.reload();
                 return;
             }
             else {
                 return r.text();
             }
-        }).then(console.log);
+        }).then(message => {
+            const error = document.getElementById("auth-modal-error");
+            error.textContent = message;
+            error.style.visibility = "visible";
+        });
         // console.log(credentials);
     }
     else if (form.id == 'admin-add-group') {
