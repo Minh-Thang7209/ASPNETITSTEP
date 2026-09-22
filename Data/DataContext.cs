@@ -4,6 +4,13 @@ namespace ASPNETITSTEP.Data
 {
     public class DataContext : DbContext
     {
+         // Конструювання контексту налаштовується з Program.cs
+        // відповідно, на час проєктування делегується конструктор
+        // з параметрами підключення.
+        public DataContext(DbContextOptions options) : base(options)
+        {           
+        }
+
         public DbSet<Entities.UserData> UsersData { get; set; }
         public DbSet<Entities.UserRole> UserRoles { get; set; }
         public DbSet<Entities.UserAccess> UserAccesses { get; set; }
@@ -12,13 +19,7 @@ namespace ASPNETITSTEP.Data
         public DbSet<Entities.Product> Products { get; set; }
         public DbSet<Entities.ProductVersion> ProductVersions { get; set; }
 
-        // Конструювання контексту налаштовується з Program.cs
-        // відповідно, на час проєктування делегується конструктор
-        // з параметрами підключення.
-        public DataContext(DbContextOptions options) : base(options)
-        {           
-        }
-
+       
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Налаштування, що виконуються під час першого завантаження

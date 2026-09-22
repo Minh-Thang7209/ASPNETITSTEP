@@ -21,7 +21,7 @@ public class HomeController(IHashService hashService, ITimeService timeService, 
     }
 
     public IActionResult Privacy()
-    {
+    {   
         return View();
     }
     public IActionResult Intro()

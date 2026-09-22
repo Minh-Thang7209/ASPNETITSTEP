@@ -16,7 +16,9 @@ builder.Services.AddTime();
 builder.Services.AddKdf();
 builder.Services.AddStorage();
 builder.Services.AddDbContext<DataContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")
+    )
 );
 
 builder.Services.AddScoped<DataAccessor>();
@@ -31,14 +33,24 @@ builder.Services.AddSession(options =>
 });
 
 builder.Services.AddCors(options =>
-    options.AddDefaultPolicy(policy => 
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
         policy
         .AllowAnyOrigin()   // відкритий АРІ - для всіх споживачів
         .AllowAnyHeader()   // дозволяємо усі заголовки
-        .AllowAnyMethod()   // та усі методи запиту
-                            // .WithMethods("GET", "POST") - якщо обмежуємо
-    )
-);
+        .AllowAnyMethod();   // та усі методи запиту
+                             // .WithMethods("GET", "POST") - якщо обмежуємо
+    });
+
+    options.AddPolicy("Localhost5173", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173")
+            .WithHeaders("Authorization", "Content-Type")
+            .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -52,7 +64,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-app.UseCors();
+app.UseCors("Localhost5173");
 app.UseAuthorization();
 app.MapStaticAssets();
 app.UseSession();
