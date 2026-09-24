@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 using ASPNETITSTEP.Data;
+using ASPNETITSTEP.Data.Entities;
 using ASPNETITSTEP.Models.Rest;
 using Azure;
 using Microsoft.AspNetCore.Http;
@@ -29,6 +31,15 @@ namespace ASPNETITSTEP.Controllers.Api
                 TotalItems = cnt,
                 TotalPages = (int) Math.Ceiling( (float)cnt / pageSize),
             };
+            ProductGroup[] groups = query.Skip(pageSize *(page-1)).Take(pageSize).ToArray();
+            foreach(var group in groups)
+            {
+                if (group.ImageUrl.StartsWith('/'))
+                {
+                    group.ImageUrl = $"{Request.Scheme}://{Request.Host}{group.ImageUrl}";
+                }
+                
+            }
             return new()
             {
                 Meta = new()
@@ -43,7 +54,7 @@ namespace ASPNETITSTEP.Controllers.Api
                     },
                     Pagination = pagination
                 },
-                Data = query.Skip(pageSize * (page - 1)).Take(pageSize).ToArray(),
+                Data = groups
             };   
         }
         [HttpPost]
