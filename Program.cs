@@ -16,8 +16,8 @@ builder.Services.AddTime();
 builder.Services.AddKdf();
 builder.Services.AddStorage();
 builder.Services.AddDbContext<DataContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection")
+         options.UseMySQL(
+        builder.Configuration.GetConnectionString("DefaultConnection")!
     )
 );
 

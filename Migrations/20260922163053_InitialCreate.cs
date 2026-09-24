@@ -13,16 +13,19 @@ namespace ASPNETITSTEP.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("MySQL:Charset", "utf8mb4");
+
             migrationBuilder.CreateTable(
                 name: "ProductGroups",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ParentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Slug = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    ParentId = table.Column<Guid>(type: "char(36)", nullable: true),
+                    Name = table.Column<string>(type: "longtext", nullable: false),
+                    Description = table.Column<string>(type: "longtext", nullable: false),
+                    Slug = table.Column<string>(type: "varchar(255)", nullable: false),
+                    ImageUrl = table.Column<string>(type: "longtext", nullable: false),
                     IsHidden = table.Column<int>(type: "int", nullable: false),
                     OrderInPrice = table.Column<int>(type: "int", nullable: false)
                 },
@@ -34,15 +37,16 @@ namespace ASPNETITSTEP.Migrations
                         column: x => x.ParentId,
                         principalTable: "ProductGroups",
                         principalColumn: "Id");
-                });
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "UserRoles",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    Name = table.Column<string>(type: "longtext", nullable: false),
+                    Description = table.Column<string>(type: "longtext", nullable: false),
                     CreateLevel = table.Column<int>(type: "int", nullable: false),
                     ReadLevel = table.Column<int>(type: "int", nullable: false),
                     UpdateLevel = table.Column<int>(type: "int", nullable: false),
@@ -51,35 +55,37 @@ namespace ASPNETITSTEP.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserRoles", x => x.Id);
-                });
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "UsersData",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Birthdate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    RegisteredAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeleteAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    FullName = table.Column<string>(type: "longtext", nullable: false),
+                    Email = table.Column<string>(type: "longtext", nullable: false),
+                    Phone = table.Column<string>(type: "longtext", nullable: true),
+                    Birthdate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    RegisteredAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    DeleteAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UsersData", x => x.Id);
-                });
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "Products",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Slug = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    GroupId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    Name = table.Column<string>(type: "longtext", nullable: false),
+                    Description = table.Column<string>(type: "longtext", nullable: true),
+                    Slug = table.Column<string>(type: "varchar(255)", nullable: true),
+                    ImageUrl = table.Column<string>(type: "longtext", nullable: true),
                     IsHidden = table.Column<int>(type: "int", nullable: false),
                     OrderInPrice = table.Column<int>(type: "int", nullable: false)
                 },
@@ -92,18 +98,19 @@ namespace ASPNETITSTEP.Migrations
                         principalTable: "ProductGroups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "UserAccesses",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Login = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Salt = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Dk = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    UserId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    RoleId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    Login = table.Column<string>(type: "varchar(255)", nullable: false),
+                    Salt = table.Column<string>(type: "longtext", nullable: false),
+                    Dk = table.Column<string>(type: "longtext", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -120,19 +127,20 @@ namespace ASPNETITSTEP.Migrations
                         principalTable: "UsersData",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "ProductVersions",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Version = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    ProductId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    Version = table.Column<string>(type: "longtext", nullable: true),
                     Price = table.Column<decimal>(type: "DECIMAL(18,2)", nullable: false),
                     Stock = table.Column<int>(type: "int", nullable: false),
-                    Slug = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Slug = table.Column<string>(type: "varchar(255)", nullable: true),
+                    ImageUrl = table.Column<string>(type: "longtext", nullable: true),
                     IsHidden = table.Column<int>(type: "int", nullable: false),
                     OrderInPrice = table.Column<int>(type: "int", nullable: false)
                 },
@@ -145,7 +153,8 @@ namespace ASPNETITSTEP.Migrations
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.InsertData(
                 table: "UserRoles",
@@ -186,8 +195,7 @@ namespace ASPNETITSTEP.Migrations
                 name: "IX_Products_Slug",
                 table: "Products",
                 column: "Slug",
-                unique: true,
-                filter: "[Slug] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductVersions_ProductId",
@@ -198,8 +206,7 @@ namespace ASPNETITSTEP.Migrations
                 name: "IX_ProductVersions_Slug",
                 table: "ProductVersions",
                 column: "Slug",
-                unique: true,
-                filter: "[Slug] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserAccesses_Login",

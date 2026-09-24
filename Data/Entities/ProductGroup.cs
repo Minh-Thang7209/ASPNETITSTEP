@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace ASPNETITSTEP.Data.Entities
 {
     public class ProductGroup
@@ -21,6 +23,7 @@ namespace ASPNETITSTEP.Data.Entities
 
 
         public ICollection<Product> Products { get; set; } = [];
+        [JsonIgnore]
         public ProductGroup? ParentGroup { get; set; }
         public ICollection<ProductGroup> Children { get; set; } = [];
     }
