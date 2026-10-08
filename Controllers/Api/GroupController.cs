@@ -3,11 +3,9 @@ using System.Text.RegularExpressions;
 using ASPNETITSTEP.Data;
 using ASPNETITSTEP.Data.Entities;
 using ASPNETITSTEP.Models.Rest;
-using Azure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-
+using Microsoft.EntityFrameworkCore;  
 namespace ASPNETITSTEP.Controllers.Api
 {
     [Route("api/group")]
@@ -38,7 +36,13 @@ namespace ASPNETITSTEP.Controllers.Api
                 {
                     group.ImageUrl = $"{Request.Scheme}://{Request.Host}{group.ImageUrl}";
                 }
-                
+                if (group.Children.Count > 0)
+                {
+                    foreach (var c in group.Children)
+                    {
+                        c.ImageUrl = $"{Request.Scheme}://{Request.Host}{c.ImageUrl}";
+                    }
+                }
             }
             return new()
             {
@@ -54,7 +58,7 @@ namespace ASPNETITSTEP.Controllers.Api
                     },
                     Pagination = pagination
                 },
-                Data = groups
+                Data = groups,
             };   
         }
         [HttpPost]

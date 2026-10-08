@@ -18,7 +18,7 @@ namespace ASPNETITSTEP.Data.Entities
         public int IsHidden { get; set; } = 0;
 
         public int OrderInPrice { get; set; } = 100000;
-
+        
         public ProductGroup Group { get; set; } = null!;
         public ICollection<ProductVersion> Versions { get; set; } = [];
     }
