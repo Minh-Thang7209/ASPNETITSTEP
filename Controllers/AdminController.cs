@@ -33,6 +33,25 @@ namespace ASP_P42.Controllers
         {
             try
             {
+                if (!TryValidateModel(formModel))
+                {
+                    return BadRequest(ModelState);
+                }
+                if (formModel.Stock != -1 && formModel.Stock <= 0)
+                {
+                    return BadRequest("Кількість має бути цілим позитивним числом або -1");
+                }
+                if (formModel.Price <= 0.01)
+                {
+                    return BadRequest("Ціна повинна бути більше за 0.01");
+                }
+                if (!string.IsNullOrWhiteSpace(formModel.Slug))
+                {
+                    if (_dataContext.Products.Any(p => p.Slug == formModel.Slug))
+                    {
+                        return BadRequest($"Slug '{formModel.Slug}' is already in use");
+                    }
+                }
 
                 await _dataAccessor.IsProductFormModelValidAsync(formModel);
                 String? imageUrl = null;
