@@ -12,7 +12,7 @@ namespace ASP_P42.Controllers
         private readonly DataContext _dataContext = dataContext;
         private readonly DataAccessor _dataAccessor = dataAccessor;
 
-         
+
 
         public IActionResult Index()
         {
@@ -33,13 +33,13 @@ namespace ASP_P42.Controllers
         {
             try
             {
-                
+
                 await _dataAccessor.IsProductFormModelValidAsync(formModel);
                 String? imageUrl = null;
-                    if(formModel.Image != null)
-                    {
-                        imageUrl = _storageService.Save(formModel.Image);
-                    }
+                if (formModel.Image != null)
+                {
+                    imageUrl = _storageService.Save(formModel.Image);
+                }
 
                 _dataAccessor.AddNewProduct(formModel, imageUrl);
                 return Ok();
@@ -47,7 +47,7 @@ namespace ASP_P42.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
-            }            
+            }
         }
 
         public IActionResult Group()
@@ -64,6 +64,14 @@ namespace ASP_P42.Controllers
         {
             try
             {
+                if (!TryValidateModel(formModel))
+                {
+                    return BadRequest(ModelState);
+                }
+                if (_dataContext.ProductGroups.Any(g => g.Slug == formModel.Slug))
+                {
+                    return BadRequest($"Slug '{formModel.Slug}' is already in use");
+                }
                 /* Д.З. Реалізувати валідацію моделі форми 
                  * додавання нової товарної групи
                  * - назва (довжина, відсутність спецсимволів)
@@ -86,6 +94,7 @@ namespace ASP_P42.Controllers
             {
                 return BadRequest(ex.Message);
             }
+
         }
     }
 }
