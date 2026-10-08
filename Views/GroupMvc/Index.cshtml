@@ -1,0 +1,12 @@
+@model ASPNETITSTEP.Data.Entities.ProductGroup[]
+
+<h2>Товарні групи</h2>
+
+<ul>
+@foreach (var group in Model)
+{
+    <li>
+        <strong>@group.Name</strong>
+    </li>
+}
+</ul>
