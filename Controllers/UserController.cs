@@ -11,11 +11,10 @@ using System.Text.RegularExpressions;
 
 namespace ASPNETITSTEP.Controllers
 {
-    public class UserController(DataContext dataContext, IKdfService kdfService) : Controller
+    public class UserController(DataAccessor dataAccessor) : Controller
     {
-        private readonly DataContext _dataContext = dataContext;
-        private readonly IKdfService _kdfService = kdfService;
-        public IActionResult SignUp([FromBody] UserSignupFormModel formModel)
+        private readonly DataAccessor _dataAccessor = dataAccessor;
+        public async Task<IActionResult> SignUpAsync([FromBody] UserSignupFormModel formModel)
         {
             if (formModel == null)
             {
@@ -75,53 +74,16 @@ namespace ASPNETITSTEP.Controllers
             {
                 return BadRequest(nameof(formModel.Email) + " has invalid format");
             }
-            // найскладніші перевірки - з залученням БД
-            if (_dataContext.UserAccesses.Any(ua => ua.Login == formModel.Login))
-            {
-                return BadRequest(nameof(formModel.Login) + $" '{formModel.Login}' is already in use");
-            }
-            Guid userId = Guid.NewGuid();
-            _dataContext.UsersData.Add(new()
-            {
-                Id = userId,
-                FullName = formModel.FullName,
-                Email = formModel.Email,
-                Phone = formModel.Phone,
-                RegisteredAt = DateTime.Now,
-                Birthdate = default,
-            });
-            String salt = Guid.NewGuid().ToString();
-            _dataContext.UserAccesses.Add(new()
-            {
-                Id = Guid.NewGuid(),
-                UserId = userId,
-                RoleId = _dataContext.UserRoles.First(r => r.Name == "User").Id,
-                Login = formModel.Login,
-                Salt = salt,
-                Dk = _kdfService.Dk(formModel.Password, salt),
-            });
-            _dataContext.SaveChanges();
-            return Json(formModel);
-        }
-
-        public IActionResult BasicAuth()
-        {
-            UserAccess? usserAccess;
             try
             {
-                usserAccess = AuthenticateUser();
+                await _dataAccessor.RegisterUserAsync(formModel);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-            if (usserAccess == null)
-            {
-                return Unauthorized("Credentials rejected: check login and password");
 
-            }
-            HttpContext.Session.SetString("userAccessId", usserAccess.Id.ToString());
-            return Ok();
+            return Json(formModel);
         }
 
         public IActionResult BasicAuthJwt()
@@ -170,17 +132,23 @@ namespace ASPNETITSTEP.Controllers
         private UserAccess? AuthenticateUser()
         {
             String authHeader = HttpContext.Request.Headers.Authorization.ToString();
+
             if (authHeader == String.Empty)
             {
                 throw new Exception("Missing Authorization header");
             }
+
             String scheme = "Basic ";
+
             if (!authHeader.StartsWith(scheme))
             {
                 throw new Exception("Authorization scheme is not Basic");
             }
+
             String credentials = authHeader[scheme.Length..];
+
             byte[] rawData;
+
             try
             {
                 rawData = Convert.FromBase64String(credentials);
@@ -190,7 +158,9 @@ namespace ASPNETITSTEP.Controllers
                 throw new Exception(
                     "Authorization credentials must be valid Base64::section 4");
             }
+
             String userPass;
+
             try
             {
                 userPass = Encoding.UTF8.GetString(rawData);
@@ -200,29 +170,19 @@ namespace ASPNETITSTEP.Controllers
                 throw new Exception(
                     "User-pass must be valid UTF8 string");
             }
+
             String[] parts = userPass.Split(':', 2);
+
             if (parts.Length != 2)
             {
                 throw new Exception(
                     "User-pass must be concatenated by ':'");
             }
+
             String login = parts[0];
             String password = parts[1];
-            if (_dataContext
-                .UserAccesses
-                .Include(ua => ua.UserData)
-                .Include(ua => ua.UserRole)
-                .AsNoTracking()
-                .FirstOrDefault(ua => ua.Login == login)
-                is UserAccess userAccess)
-            {
-                String dk = _kdfService.Dk(password, userAccess.Salt);
-                if (dk == userAccess.Dk)
-                {
-                    return userAccess;
-                }
-            }
-            return null;
+
+            return _dataAccessor.AuthenticateUser(login, password);
         }
     }
 

@@ -1,11 +1,15 @@
+using ASPNETITSTEP.Data.Entities;
 using ASPNETITSTEP.Models.Admin;
+using ASPNETITSTEP.Models.User;
+using ASPNETITSTEP.Services.Kdf;
 using Microsoft.EntityFrameworkCore;
 
 namespace ASPNETITSTEP.Data
 {
-    public class DataAccessor(DataContext dataContext)
+    public class DataAccessor(DataContext dataContext, IKdfService kdfService)
     {
         private readonly DataContext _dataContext = dataContext;
+        private readonly IKdfService _kdfService = kdfService;
         public Guid GetDbIdentity()
         {
             return _dataContext.Database
@@ -129,6 +133,67 @@ namespace ASPNETITSTEP.Data
 
             _dataContext.ProductGroups.Remove(productGroup);
             await _dataContext.SaveChangesAsync();
+        }
+        public async Task<UserAccess> RegisterUserAsync(UserSignupFormModel formModel)
+        {
+            if (_dataContext.UserAccesses.Any(ua => ua.Login == formModel.Login))
+            {
+                throw new Exception(
+                    $"Login '{formModel.Login}' is already in use");
+            }
+
+            Guid userId = Guid.NewGuid();
+
+            _dataContext.UsersData.Add(new()
+            {
+                Id = userId,
+                FullName = formModel.FullName,
+                Email = formModel.Email,
+                Phone = formModel.Phone,
+                RegisteredAt = DateTime.Now,
+                Birthdate = default,
+            });
+
+            String salt = Guid.NewGuid().ToString();
+
+            UserAccess userAccess = new()
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                RoleId = _dataContext.UserRoles.First(r => r.Name == "User").Id,
+                Login = formModel.Login,
+                Salt = salt,
+                Dk = _kdfService.Dk(formModel.Password, salt),
+            };
+
+            _dataContext.UserAccesses.Add(userAccess);
+
+            await _dataContext.SaveChangesAsync();
+
+            return userAccess;
+        }
+        public UserAccess? AuthenticateUser(string login, string password)
+        {
+            UserAccess? userAccess = _dataContext
+                .UserAccesses
+                .Include(ua => ua.UserData)
+                .Include(ua => ua.UserRole)
+                .AsNoTracking()
+                .FirstOrDefault(ua => ua.Login == login);
+
+            if (userAccess == null)
+            {
+                return null;
+            }
+
+            String dk = _kdfService.Dk(password, userAccess.Salt);
+
+            if (dk == userAccess.Dk)
+            {
+                return userAccess;
+            }
+
+            return null;
         }
     }
 }
