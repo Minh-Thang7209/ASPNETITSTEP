@@ -10,3 +10,61 @@
     </li>
 }
 </ul>
+
+@{
+    int currentPage = ViewBag.Page;
+    int totalPages = ViewBag.TotalPages;
+}
+
+@if (totalPages > 0)
+{
+    <nav>
+        <ul class="pagination">
+
+            <!-- Назад -->
+            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                <a class="page-link"
+                   href="@Url.Action("Index", new { page = currentPage - 1 })">
+                    &lt;&lt;
+                </a>
+            </li>
+
+            @if (totalPages <= 3)
+            {
+                for (int i = 1; i <= totalPages; i++)
+                {
+                    <li class="page-item @(i == currentPage ? "active" : "")">
+                        <a class="page-link"
+                           href="@Url.Action("Index", new { page = i })">
+                            @i
+                        </a>
+                    </li>
+                }
+            }
+            else
+            {
+                int startPage = Math.Max(1, currentPage - 1);
+                int endPage = Math.Min(totalPages, currentPage + 1);
+
+                for (int i = startPage; i <= endPage; i++)
+                {
+                    <li class="page-item @(i == currentPage ? "active" : "")">
+                        <a class="page-link"
+                           href="@Url.Action("Index", new { page = i })">
+                            @i
+                        </a>
+                    </li>
+                }
+            }
+
+            <!-- Вперед -->
+            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                <a class="page-link"
+                   href="@Url.Action("Index", new { page = currentPage + 1 })">
+                    &gt;&gt;
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+}
