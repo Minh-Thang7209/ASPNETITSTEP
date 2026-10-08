@@ -9,4 +9,26 @@
     <p>
         @ViewBag.ItemValue
     </p>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        var login = User.Identity.Name ?? "";
+        var firstLetter = login.Length > 0
+            ? login[0].ToString().ToUpper()
+            : "?";
+
+        var fullName = User.FindFirst("FullName")?.Value ?? "";
+        var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? "";
+
+        <div class="user-avatar-container">
+            <div class="user-avatar">
+                @firstLetter
+            </div>
+
+            <div class="user-tooltip">
+                <strong>@fullName</strong>
+                <br />
+                @email
+            </div>
+        </div>
+    }
 </div>

@@ -13,11 +13,11 @@ namespace ASP_P42.Middleware.AuthSession
     {
         private readonly RequestDelegate _next = next;
 
-        public async Task InvokeAsync(HttpContext context, 
+        public async Task InvokeAsync(HttpContext context,
             ILogger<AuthSessionMiddleware> logger,
-                  // інжекція через метод
+            // інжекція через метод
             DataContext dataContext    // порядок ролі не грає, тільки тип
-            
+
         )
         {
             String authKey = "userAccessId";
@@ -53,7 +53,7 @@ namespace ASP_P42.Middleware.AuthSession
                     .Include(ua => ua.UserRole)  // навігаційних властивостей
                     .AsNoTracking()              // Вимкнення стеження змін
                     .FirstOrDefault(ua => ua.Id == UserAccessGuid);
-                    //logger.LogWarning(userAccessId);
+                //logger.LogWarning(userAccessId);
                 if (userAccess != null)
                 {
                     // знайдено підтвердження допуску, передаємо до контексту
@@ -70,13 +70,13 @@ namespace ASP_P42.Middleware.AuthSession
                     context.User = new ClaimsPrincipal(
                         new ClaimsIdentity(
                             [
-                                //new Claim(ClaimTypes.Name, userAccess.UserData.FullName),
-                                //new(ClaimTypes.Email, userAccess.UserData.Email),
-                                //new(ClaimTypes.NameIdentifier, userAccess.Login),
                                 new(ClaimTypes.Sid, userAccessId),
+                                new(ClaimTypes.Name, userAccess.Login),
+                                new(ClaimTypes.Email, userAccess.UserData.Email),
+                                new("FullName", userAccess.UserData.FullName)
                             ],
                             nameof(AuthSessionMiddleware)
-                        )
+    )
                     );
                     logger.LogWarning(context.User.Identity?.IsAuthenticated.ToString());
 

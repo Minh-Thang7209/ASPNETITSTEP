@@ -65,7 +65,7 @@ app.UseRouting();
 app.UseCors("Localhost5173");
 app.MapStaticAssets();
 app.UseSession();
-// app.UseAuthSession();
+app.UseAuthSession();
 app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
