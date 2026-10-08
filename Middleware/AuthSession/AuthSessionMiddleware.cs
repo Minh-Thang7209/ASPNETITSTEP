@@ -17,6 +17,7 @@ namespace ASP_P42.Middleware.AuthSession
             ILogger<AuthSessionMiddleware> logger,
                   // інжекція через метод
             DataContext dataContext    // порядок ролі не грає, тільки тип
+            
         )
         {
             String authKey = "userAccessId";

@@ -17,11 +17,15 @@ public class HomeController(IHashService hashService, ITimeService timeService, 
 
     public IActionResult Index()
     {
+        var itemValue = HttpContext.Items["itemKey"];
+
+        ViewBag.ItemValue = itemValue;
+
         return View();
     }
 
     public IActionResult Privacy()
-    {   
+    {
         return View();
     }
     public IActionResult Intro()
