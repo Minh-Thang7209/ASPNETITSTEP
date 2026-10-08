@@ -18,9 +18,17 @@ namespace ASP_P42.Controllers
             {
                 ext = id[dotPosition..];
             }
-            String contentType = ext switch {
+            String contentType = ext switch
+            {
                 ".jpg" or ".jpeg" => "image/jpeg",
                 ".png" => "image/png",
+                ".gif" => "image/gif",
+                ".webp" => "image/webp",
+                ".bmp" => "image/bmp",
+                ".svg" => "image/svg+xml",
+                ".ico" => "image/x-icon",
+                ".tif" or ".tiff" => "image/tiff",
+                ".avif" => "image/avif",
                 _ => "application/octet-stream"
             };
             try

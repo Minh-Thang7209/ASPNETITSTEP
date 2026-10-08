@@ -2,7 +2,20 @@ namespace ASPNETITSTEP.Services.Storage
 {
     public class LocalStorageService : IStorageService
     {
-        private readonly String[] allowedExtensions = [".jpg", ".png", ".jpeg", ".webp"];
+        private readonly String[] allowedExtensions =
+        [
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".gif",
+            ".webp",
+            ".bmp",
+            ".svg",
+            ".ico",
+            ".tif",
+            ".tiff",
+            ".avif"
+        ];
         private readonly String localFolder = "LocalStorage";
 
         public byte[] Load(string filename)
@@ -15,7 +28,7 @@ namespace ASPNETITSTEP.Services.Storage
         public string Save(IFormFile file)
         {
             // виконуємо перевірку на наявність та валідність даних
-            if(file == null) throw new ArgumentNullException(
+            if (file == null) throw new ArgumentNullException(
                 nameof(file), "Data not received");
 
             if (file.Length < 256) throw new ArgumentException("File too short");
@@ -23,8 +36,8 @@ namespace ASPNETITSTEP.Services.Storage
             // визначаємо розширення, з нього тип файлу
             int dotPosition = file.FileName.LastIndexOf('.');
             if (dotPosition < 0) throw new ArgumentException("File must have extension");
-            String ext = file.FileName[dotPosition..];
-            if ( ! allowedExtensions.Contains(ext))
+            String ext = file.FileName[dotPosition..].ToLowerInvariant();
+            if (!allowedExtensions.Contains(ext.ToLowerInvariant()))
             {
                 throw new ArgumentException("File type not allowed");
             }
