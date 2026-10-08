@@ -15,14 +15,18 @@ namespace ASPNETITSTEP.Controllers
     {
         private readonly DataContext _dataContext = dataContext;
         private readonly IKdfService _kdfService = kdfService;
-         public IActionResult SignUp([FromBody]UserSignupFormModel formModel)
+        public IActionResult SignUp([FromBody] UserSignupFormModel formModel)
         {
-            if(formModel == null)
+            if (formModel == null)
             {
                 return BadRequest("Data structure non-bindable to model");
             }
+            if (!TryValidateModel(formModel))
+            {
+                return BadRequest(ModelState);
+            }
             // першими ідуть "дешеві" перевірки - з мінімальною працеємністю
-            if( ! formModel.IsAgree)
+            if (!formModel.IsAgree)
             {
                 return BadRequest("You should confirm site policy (agreement)");
             }
@@ -43,7 +47,7 @@ namespace ASPNETITSTEP.Controllers
             {
                 return BadRequest(nameof(formModel.Password) + requiredMessage);
             }
-            if(formModel.Password != formModel.Repeat)
+            if (formModel.Password != formModel.Repeat)
             {
                 return BadRequest("Password and Repeat mismatch");
             }
@@ -59,20 +63,20 @@ namespace ASPNETITSTEP.Controllers
             {
                 return BadRequest(nameof(formModel.Login) + " too short (2 symbols at least)");
             }
-            if(formModel.Login.Contains(':'))
+            if (formModel.Login.Contains(':'))
             {
                 return BadRequest(nameof(formModel.Login) + " could not contain colon (':')");
             }
             formModel.Email = formModel.Email.Trim();
-            if( ! Regex.IsMatch(
-                formModel.Email, 
+            if (!Regex.IsMatch(
+                formModel.Email,
                 @"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$"
             ))
             {
                 return BadRequest(nameof(formModel.Email) + " has invalid format");
             }
             // найскладніші перевірки - з залученням БД
-            if(_dataContext.UserAccesses.Any(ua => ua.Login == formModel.Login))
+            if (_dataContext.UserAccesses.Any(ua => ua.Login == formModel.Login))
             {
                 return BadRequest(nameof(formModel.Login) + $" '{formModel.Login}' is already in use");
             }
@@ -99,7 +103,7 @@ namespace ASPNETITSTEP.Controllers
             _dataContext.SaveChanges();
             return Json(formModel);
         }
-        
+
         public IActionResult BasicAuth()
         {
             UserAccess? usserAccess;
