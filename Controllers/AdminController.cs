@@ -115,5 +115,27 @@ namespace ASP_P42.Controllers
             }
 
         }
+        [HttpPost]
+        public async Task<IActionResult> UpdateGroup(Guid id, string name)
+        {
+            var group = await _dataAccessor.GetProductGroupById(id);
+
+            if (group == null)
+                return NotFound();
+
+            group.Name = name;
+
+            await _dataAccessor.UpdateProductGroup(group);
+
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteGroup(Guid id)
+        {
+            await _dataAccessor.DeleteProductGroup(id);
+
+            return Ok();
+        }
     }
 }
