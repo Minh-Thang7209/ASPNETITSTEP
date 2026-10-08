@@ -37,10 +37,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", policy =>
     {
         policy
-        .AllowAnyOrigin()   // відкритий АРІ - для всіх споживачів
-        .AllowAnyHeader()   // дозволяємо усі заголовки
-        .AllowAnyMethod();   // та усі методи запиту
-                             // .WithMethods("GET", "POST") - якщо обмежуємо
+        .AllowAnyOrigin()   
+        .AllowAnyHeader()   
+        .AllowAnyMethod();  
+                             
     });
 
     options.AddPolicy("Localhost5173", policy =>
@@ -54,11 +54,9 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
